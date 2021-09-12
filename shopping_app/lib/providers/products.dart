@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shopping_app/models/product.dart';
+import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -64,17 +66,38 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void addProduct(Product product) {
-    final newPrd = Product(
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      id: DateTime.now().toString(),
-    );
+  Future<void> addProduct(Product product) async {
+    final url = Uri.parse(
+        'https://flutter-class-905df-default-rtdb.firebaseio.com/products.json');
 
-    _items.add(newPrd);
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavorite
+          },
+        ),
+      );
+
+      final newPrd = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: json.decode(response.body)['name'],
+      );
+      _items.add(newPrd);
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+
     // _items.insert(0, newPrd); //only if insert in the begin of the list would be necessary
-    notifyListeners();
   }
 }
