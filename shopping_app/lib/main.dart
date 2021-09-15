@@ -9,6 +9,8 @@ import 'package:shopping_app/screens/cart_screen.dart';
 import 'package:shopping_app/screens/orders_screen.dart';
 import 'package:shopping_app/screens/product_add_edit_screen.dart';
 import 'package:shopping_app/screens/product_detail_screen.dart';
+import 'package:shopping_app/screens/products_overview_screen.dart';
+import 'package:shopping_app/screens/splash_screen.dart';
 
 import 'package:shopping_app/screens/user_products_screen.dart';
 
@@ -18,36 +20,55 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (ctx) => Auth(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => Products(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => Cart(),
-        ),
-        ChangeNotifierProvider(
-          create: (ctx) => Orders(),
-        )
-      ],
-      child: MaterialApp(
-        title: 'Shopping Dummy',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-          accentColor: Colors.white,
-          //fontFamily: 'Lato',
-        ),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-          CartScreen.routeName: (ctx) => CartScreen(),
-          OrdersScreen.routeName: (ctx) => OrdersScreen(),
-          UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-          ProductAddEditScreen.routeName: (ctx) => ProductAddEditScreen(),
-        },
-      ),
-    );
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => Auth(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Products>(
+            create: null,
+            update: (ctx, auth, previousProducts) => Products(
+              auth.token,
+              auth.userId,
+              previousProducts == null ? [] : previousProducts.items,
+            ),
+          ),
+          ChangeNotifierProvider(
+            create: (ctx) => Cart(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            create: null,
+            update: (ctx, auth, previoursOrder) => Orders(
+              auth.token,
+              auth.userId,
+              previoursOrder == null ? [] : previoursOrder.orders,
+            ),
+          ),
+        ],
+        child: Consumer<Auth>(
+          builder: (ctx, auth, _) => MaterialApp(
+            title: 'Shopping Dummy',
+            theme: ThemeData(
+              primarySwatch: Colors.green,
+              accentColor: Colors.white,
+              //fontFamily: 'Lato',
+            ),
+            home: auth.isAuth
+                ? ProductsOverviewScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SplashScreen()
+                            : AuthScreen()),
+            routes: {
+              ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+              CartScreen.routeName: (ctx) => CartScreen(),
+              OrdersScreen.routeName: (ctx) => OrdersScreen(),
+              UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
+              ProductAddEditScreen.routeName: (ctx) => ProductAddEditScreen(),
+            },
+          ),
+        ));
   }
 }
