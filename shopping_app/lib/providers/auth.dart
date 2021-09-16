@@ -40,7 +40,6 @@ class Auth with ChangeNotifier {
   }
 
   Future<bool> tryAutoLogin() async {
-    print('Entrou no auto login');
     final deviceData = await SharedPreferences.getInstance();
     if (!deviceData.containsKey('userData')) {
       return false;
@@ -81,7 +80,6 @@ class Auth with ChangeNotifier {
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
-      print(responseData);
 
       _token = responseData['idToken'];
       _userId = responseData['localId'];
@@ -101,8 +99,7 @@ class Auth with ChangeNotifier {
           'expireDate': _expiryDate.toIso8601String(),
         },
       );
-      print('decide data');
-      print(userData);
+
       deviceCache.setString('userData', userData);
     } catch (error) {
       print(error);

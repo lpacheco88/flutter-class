@@ -38,7 +38,7 @@ class Products with ChangeNotifier {
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {
-      print('...');
+      //
     }
   }
 
@@ -87,7 +87,7 @@ class Products with ChangeNotifier {
           imageUrl: prodData['imageUrl'],
         ));
       });
-      print(loadedProducts);
+
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
