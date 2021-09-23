@@ -4,13 +4,16 @@ import 'package:device_features/helpers/db_helper.dart';
 import 'package:device_features/helpers/location_helper.dart';
 import 'package:device_features/models/place.dart';
 import 'package:flutter/foundation.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GreatePlaces with ChangeNotifier {
   List<Place> _items = [];
 
   List<Place> get items {
     return [..._items];
+  }
+
+  Place findbyId(String id) {
+    return _items.firstWhere((item) => item.id == id);
   }
 
   Future<void> addPlace(
