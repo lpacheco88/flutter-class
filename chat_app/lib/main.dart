@@ -1,4 +1,4 @@
-import 'package:chat_app/screens/chat_screen.dart';
+import 'package:chat_app/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,9 +12,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chat exercise',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
+        backgroundColor: Colors.green,
+        accentColor: Colors.lightGreenAccent,
+        accentColorBrightness: Brightness.dark,
+        buttonTheme: ButtonTheme.of(context).copyWith(
+          buttonColor: Colors.green,
+          textTheme: ButtonTextTheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
       ),
-      home: ChatScreen(),
+      home: AuthScreen(),
     );
   }
 }
