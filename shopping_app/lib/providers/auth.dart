@@ -64,19 +64,18 @@ class Auth with ChangeNotifier {
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
     try {
-      final url = Uri.parse(
-          'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyCDeRgKyDLaWasICedN8eZFleaaxgHBLiw');
+      final url =
+          Uri.parse('https://api.agendamentosantahelena.com.br/Account/SigIn');
       final response = await http.post(
         url,
+        headers: {'Content-Type': 'application/json'},
         body: json.encode(
-          {
-            'email': email,
-            'password': password,
-            'returnSecureToken': true,
-          },
+          {'login': "l_pacheco88@hotmail.com", "password": "123456"},
         ),
       );
+      print(response);
       final responseData = json.decode(response.body);
+      print(responseData);
       if (responseData['error'] != null) {
         throw HttpException(responseData['error']['message']);
       }
